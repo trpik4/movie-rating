@@ -1,0 +1,6 @@
+pylint==2.5.3
+astroid==2.4.1
+prospector
+pycodestyle
+pydocstyle
+yamllint
