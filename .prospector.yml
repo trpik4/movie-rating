@@ -1,0 +1,25 @@
+---
+# Prospector for movie-rating.
+
+ignore-patterns:
+  - /migrations/.*\.py
+  - .*settings.*\.py
+
+strictness: veryhigh
+
+doc-warnings: true
+test-warnings: true
+member-warnings: true
+
+pep8:
+  full: true
+
+pep257:
+  disable:
+    - D203 # 1 blank line before class
+    - D200 # one line docstring fits in quotes
+    - D212 # Multi line docstring should start at first line
+
+mccabe:
+  options:
+    max-complexity: 20
