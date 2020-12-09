@@ -4,3 +4,7 @@ prospector
 pycodestyle
 pydocstyle
 yamllint
+django
+djangorestframework
+markdown
+django-filter

@@ -1,5 +1,5 @@
 ---
-# Github actions for movie-rating.
+# Github actions for movie_rating.
 
 name: CI
 
