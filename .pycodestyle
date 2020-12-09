@@ -1,0 +1,2 @@
+[pycodestyle]
+exclude=^movie_rating/.*settings.*\.py

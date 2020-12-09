@@ -1,0 +1,11 @@
+# pylint for movie_rating.
+
+[MASTER]
+
+ignore-patterns=^manage\.py,/migrations/.*\.py
+
+load-plugins=pylint_django
+
+[MESSAGES CONTROL]
+
+disable=too-many-ancestors

@@ -1,3 +1,8 @@
+"""Admin for ratings."""
 from django.contrib import admin
 
-# Register your models here.
+from ratings.models import Movie, Rating, Person
+
+admin.site.register(Movie)
+admin.site.register(Rating)
+admin.site.register(Person)
