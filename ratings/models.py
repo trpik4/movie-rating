@@ -70,6 +70,35 @@ class Movie(models.Model):
         help_text=_("Ratings for the movie.")
     )
 
+    adult = models.BooleanField(
+        _("adult"),
+        help_text=_("Is this an adult movie?")
+    )
+
+    movie_id = models.IntegerField(
+        _("Movie ids"),
+        help_text=_("Id from movie database.")
+    )
+
+    language = models.CharField(
+        _("language"),
+        max_length=200,
+        help_text=_("Language of the movie.")
+    )
+
+    release_date = models.DateField(
+        _("release date"),
+        help_text=_("Release date of the movie."),
+        null=True
+    )
+
+    poster_id = models.CharField(
+        _("Poster id"),
+        max_length=200,
+        help_text=_("Poster id of the movie."),
+        null=True
+    )
+
     def __str__(self):
         """Display name as string."""
         return str(self.name)

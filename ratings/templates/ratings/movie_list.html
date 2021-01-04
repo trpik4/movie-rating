@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="card-columns d-flex justify-content-center align-items-stretch h-100">
-        <div class="col">
-            {% for movie in movies %}
-                <div class="card mb-3" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ movie.name }}</h5>
-                        <p class="card-text">{{ movie.description }}</p>
-                    </div>
-                </div>
-            {% endfor %}
+{% load static %}
+<div class="card-columns d-flex h-100">
+    {% for movie in movies %}
+    <div class="col">
+        <div class="card mb-3" style="width: 18rem;">
+            <img class="card-img-top" src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
+                 alt="{{ movie.name }} poster">
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.name }}</h5>
+                <p class="card-text">{{ movie.description }}</p>
+            </div>
         </div>
     </div>
+    {% endfor %}
+</div>
 {% endblock %}
