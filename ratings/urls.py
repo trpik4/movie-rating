@@ -15,7 +15,7 @@ urlpatterns = [
         name="movie_create"
     ),
     path(
-        'movies/<int:pk>/',
+        'movies/<str:slug>/',
         views.MovieDetailView.as_view(),
         name="movie_detail"
     )

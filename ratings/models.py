@@ -1,7 +1,67 @@
 """Models.py for ratings."""
-
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+
+
+class AbsoluteUrlFromClassNameMixin:
+    """Mixin to return absolute url."""
+
+    def get_absolute_url(self):
+        """Return absolute url."""
+        return reverse("rating:" + self.__class__.__name__.lower() + "_detail",
+                       kwargs={"slug": self.slug})
+
+
+class SlugFromNameMixin:
+    """Mixin to generate slug from movie name."""
+
+    def save(self, *args, **kwargs):
+        """Override save to add slug."""
+        if not self.pk or self.name != type(self)._base_manager.all()\
+                .filter(pk=self.pk):
+            self.slug = self.unique_slug()
+        super().save(*args, **kwargs)
+
+    def unique_slug(self):
+        """Generate a unique slug."""
+        try:
+            origin_slug = slugify(self.name)
+        except AttributeError:
+            raise ImproperlyConfigured from AttributeError
+        number = 1
+        unique_slug = self.check_size(origin_slug, number)
+        slug_qs = type(self)._base_manager.all().order_by().only("slug")\
+            .exclude(pk=self.pk)
+        slug_set = set(slug_qs.values_list("slug", flat=True))
+
+        while unique_slug in slug_set:
+            number += 1
+            unique_slug = self.check_size(origin_slug, number)
+        return unique_slug
+
+    def check_size(self, origin_slug, numb):
+        """Ensure slug size under 255."""
+        new_slug = "{0}-{1}".format(origin_slug, numb)
+        if len(new_slug) >= 255:
+            return self.check_size(origin_slug[:-1], numb)
+        return new_slug
+
+
+class SlugFromNameModel(SlugFromNameMixin, models.Model):
+    """Abstract class that adds slug."""
+
+    slug = models.SlugField(
+        max_length=255,
+        editable=False
+    )
+
+    class Meta:
+        """Meta class."""
+
+        abstract = True
 
 
 class Person(models.Model):
@@ -37,7 +97,7 @@ class Rating(models.Model):
         return str(self.score)
 
 
-class Movie(models.Model):
+class Movie(SlugFromNameModel, AbsoluteUrlFromClassNameMixin):
     """Movie object."""
 
     name = models.CharField(

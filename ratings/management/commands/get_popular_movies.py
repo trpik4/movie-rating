@@ -11,8 +11,8 @@ from ratings.models import Movie
 
 MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/"
 MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/original/"
-IMAGE_SAVE_PATH = "static/images/"
-MOVIE_PAGE_LIMIT = 10
+IMAGE_SAVE_PATH = "ratings/static/ratings/images/"
+MOVIE_PAGE_LIMIT = 11
 
 
 def url_request(url, url_params="", page=1):
@@ -42,14 +42,19 @@ def get_images():
     """Get images from poster id."""
     movies = Movie.objects.all().values_list("poster_id", flat=True)
     existing_images = os.listdir(IMAGE_SAVE_PATH)
+    new_image_count = 0
     for poster_id in movies:
         if poster_id not in existing_images and poster_id is not None:
             save_image(poster_id)
+            new_image_count += 1
+    print(str(new_image_count) + " new images were downloaded.")
 
 
 def get_movies():
     """Get popular movies."""
     movies = Movie.objects.all()
+
+    new_movie_count = 0
 
     for page in range(1, MOVIE_PAGE_LIMIT):
         for movie in url_request(
@@ -60,6 +65,7 @@ def get_movies():
                 movie_object = movies.get(movie_id=movie['id'])
             except ObjectDoesNotExist:
                 movie_object = Movie()
+                new_movie_count += 1
 
             movie_object.name = movie['title']
             movie_object.movie_id = movie['id']
@@ -76,6 +82,7 @@ def get_movies():
             except AttributeError:
                 pass
             movie_object.save()
+    print(str(new_movie_count) + " new movies were put in the database.")
 
 
 class Command(BaseCommand):
