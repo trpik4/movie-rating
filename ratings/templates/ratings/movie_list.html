@@ -4,13 +4,18 @@
 <div class="row">
     <div class="d-flex flex-wrap">
         {% for movie in movies %}
-        <div class="col-md-3 my-5">
-            <div class="card mb-3 h-100" style="width: 18rem;" >
-                <a href="{{ movie.get_absolute_url }}"><img class="card-img-top" src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
-                     alt="{{ movie.name }} poster"></a>
+        <div class="col-md-2 my-5">
+            <div class="card mb-2 w-76 h-100">
+                <a href="{{ movie.get_absolute_url }}">
+                    <img class="card-img-top"
+                        src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
+                        alt="{{ movie.name }} poster">
+                </a>
                 <div class="card-body">
-                    <h5 class="card-title">{{ movie.name }}</h5>
-                    <p class="card-text">{{ movie.description }}</p>
+                    <a href="{{ movie.get_absolute_url }}">
+                        <h5 class="card-title">{{ movie.name }}</h5>
+                    </a>
+                    <p class="card-text">{{ movie.description|truncatechars:255 }}</p>
                 </div>
             </div>
         </div>

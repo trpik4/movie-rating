@@ -159,6 +159,11 @@ class Movie(SlugFromNameModel, AbsoluteUrlFromClassNameMixin):
         null=True
     )
 
+    popularity = models.FloatField(
+        _("Popularity"),
+        help_text=_("Popularity of the movie.")
+    )
+
     def __str__(self):
         """Display name as string."""
         return str(self.name)
