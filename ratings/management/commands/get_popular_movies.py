@@ -10,6 +10,7 @@ MOVIE_PAGE_LIMIT = 11
 def get_movies():
     """Get popular movies."""
     for page in range(1, MOVIE_PAGE_LIMIT):
+        print(page)
         process_new_movies(
             url_request(
                 MOVIE_DB_BASE_URL,

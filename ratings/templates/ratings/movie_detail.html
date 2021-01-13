@@ -10,9 +10,13 @@
         <p>{{ movie.description }}</p>
         <p>{{ movie.release_date }}</p>
         <p>{{ movie.language }}</p>
-        {% for similar_movie in similar_movies %}
-        <p>{{ similar_movie.name }}</p>
-         {% endfor %}
     </div>
+</div>
+<h1>Similar movies</h1>
+<!--{{ movie.similar_movies.objects.all }}-->
+<div class="d-flex">
+{% for similar_movie in movie.similar_movies.all %}
+    {% include "ratings/movie.html" with movie=similar_movie %}
+{% endfor %}
 </div>
 {% endblock %}

@@ -7,7 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from movie_rating.secrets import MOVIE_DB_API_KEY
 from ratings.models import Movie
-from ratings.variables import IMAGE_SAVE_PATH, MOVIE_DB_IMAGE_URL
+from ratings.variables import IMAGE_SAVE_PATH, MOVIE_DB_IMAGE_URL, \
+    MOVIE_DB_BASE_URL
 
 
 def url_request(url, url_params="", page=1):
@@ -33,7 +34,7 @@ def save_image(poster_id):
             shutil.copyfileobj(image_request.raw, file)
 
 
-def process_new_movies(movies_list):
+def process_new_movies(movies_list, original_movie=None):
     """Read list to save movies and get their posters."""
     movies = Movie.objects.all()
     existing_images = os.listdir(IMAGE_SAVE_PATH)
@@ -63,6 +64,20 @@ def process_new_movies(movies_list):
             pass
         movie_object.save()
         movie_object_list.append(movie_object)
+
+        # similar movies
+        if original_movie is None:
+            process_new_movies(
+                url_request(
+                    MOVIE_DB_BASE_URL,
+                    "movie/{0}/similar".format(movie_object.movie_id)
+                )["results"],
+                original_movie=movie_object
+            )
+        else:
+            movie_object.similar_movies.add(original_movie)
+
+        # providers
 
         if movie_object.poster_id \
                 and movie_object.poster_id not in existing_images:

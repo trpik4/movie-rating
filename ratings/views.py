@@ -37,6 +37,7 @@ class MovieDetailView(DetailView):
             url_request(
                 MOVIE_DB_BASE_URL,
                 "movie/{0}/similar".format(context['movie'].movie_id)
-            )['results']
+            )['results'],
+            original_movie=context['movie']
         )
         return context

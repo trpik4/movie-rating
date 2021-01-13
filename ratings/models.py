@@ -164,6 +164,12 @@ class Movie(SlugFromNameModel, AbsoluteUrlFromClassNameMixin):
         help_text=_("Popularity of the movie.")
     )
 
+    similar_movies = models.ManyToManyField(
+        "self",
+        blank=True,
+        help_text=_("Similar movies.")
+    )
+
     def __str__(self):
         """Display name as string."""
         return str(self.name)
