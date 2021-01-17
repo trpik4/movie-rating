@@ -170,6 +170,31 @@ class Movie(SlugFromNameModel, AbsoluteUrlFromClassNameMixin):
         help_text=_("Similar movies.")
     )
 
+    providers = models.ManyToManyField(
+        "Provider",
+        blank=True,
+        help_text=_("Providers of movie.")
+    )
+
+    def __str__(self):
+        """Display name as string."""
+        return str(self.name)
+
+class Provider(SlugFromNameModel):
+
+    name = models.CharField(
+        _("name"),
+        max_length=200,
+        help_text=_("Name of the movie."),
+    )
+
+    poster_id = models.CharField(
+        _("Poster id"),
+        max_length=200,
+        help_text=_("Poster id of the movie."),
+        null=True
+    )
+
     def __str__(self):
         """Display name as string."""
         return str(self.name)

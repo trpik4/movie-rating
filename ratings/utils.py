@@ -6,9 +6,11 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from movie_rating.secrets import MOVIE_DB_API_KEY
-from ratings.models import Movie
+from ratings.models import Movie, Provider
 from ratings.variables import IMAGE_SAVE_PATH, MOVIE_DB_IMAGE_URL, \
     MOVIE_DB_BASE_URL
+
+PROVIDER_TYPES = ["rent", "buy", "flatrate"]
 
 
 def url_request(url, url_params="", page=1):
@@ -74,12 +76,40 @@ def process_new_movies(movies_list, original_movie=None):
                 )["results"],
                 original_movie=movie_object
             )
+
+            providers = url_request(
+                MOVIE_DB_BASE_URL,
+                "movie/{0}/watch/providers".format(movie_object.movie_id)
+            )["results"]
+            try:
+                for provider_type in providers["US"]:
+                    if provider_type not in PROVIDER_TYPES:
+                        continue
+                    provider_list = Provider.objects.all()
+                    for provider in providers["US"][provider_type]:
+                        try:
+                            provider_object = provider_list.get(name=provider["provider_name"])
+                        except ObjectDoesNotExist:
+                            provider_object = Provider()
+
+                        provider_object.name = provider["provider_name"]
+                        provider_object.poster_id = provider["logo_path"].replace("/", "")
+
+                        provider_object.save()
+
+                        movie_object.providers.add(provider_object)
+
+                        if provider_object.poster_id \
+                                and provider_object.poster_id not in existing_images:
+                            save_image(provider_object.poster_id)
+            except KeyError:
+                pass
+
         else:
             movie_object.similar_movies.add(original_movie)
 
         # providers
 
-        if movie_object.poster_id \
-                and movie_object.poster_id not in existing_images:
-            save_image(movie_object.poster_id)
+
+
     return movie_object_list

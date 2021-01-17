@@ -1,22 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
-{% load static %}
-<div class="card w-25 h-25">
-    <img class="card-img-top"
-         src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
-         alt="{{ movie.name }} poster">
-    <div class="card-body">
-        <p>{{ movie.name }}</p>
-        <p>{{ movie.description }}</p>
-        <p>{{ movie.release_date }}</p>
-        <p>{{ movie.language }}</p>
+    {% load static %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4">
+                <img class="img-thumbnail rounded"
+                     src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
+                     alt="{{ movie.name }} poster">
+            </div>
+            <div class="col-6">
+                <h1>{{ movie.name }}</h1>
+                <p>{{ movie.description }}</p>
+                <p>Ratings place holder</p>
+                <h3>Available on:</h3>
+                <div class="d-flex">
+                    {% for provider in movie.providers.all %}
+                        <img class="img-thumbnail rounded border border-dark"
+                             src="{% static 'ratings/images/'|add:provider.poster_id|safe %}"
+                             alt="{{ provider.name }} poster">
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
     </div>
-</div>
-<h1>Similar movies</h1>
-<!--{{ movie.similar_movies.objects.all }}-->
-<div class="d-flex">
-{% for similar_movie in movie.similar_movies.all %}
-    {% include "ratings/movie.html" with movie=similar_movie %}
-{% endfor %}
-</div>
+    {#<div class="card w-25 h-25">#}
+    {#    <img class="card-img-top"#}
+    {#         src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"#}
+    {#         alt="{{ movie.name }} poster">#}
+    {#    <div class="card-body">#}
+    {#        <p>{{ movie.name }}</p>#}
+    {#        <p>{{ movie.description }}</p>#}
+    {#        <p>{{ movie.release_date }}</p>#}
+    {#        <p>{{ movie.language }}</p>#}
+    {#    </div>#}
+    {#</div>#}
+    {#<h1>Similar movies</h1>#}
+    {#<!--{{ movie.similar_movies.objects.all }}-->#}
+    {#<div class="d-flex">#}
+    {#{% for similar_movie in movie.similar_movies.all %}#}
+    {#    {% include "ratings/movie.html" with movie=similar_movie %}#}
+    {#{% endfor %}#}
+    {#</div>#}
+    {#<div class="d-flex">#}
+    {#{% for provider in movie.providers.all %}#}
+    {#    <p>{{ provider.name }}</p>#}
+    {#{% endfor %}#}
+    {#</div>#}
+
+
 {% endblock %}
