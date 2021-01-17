@@ -6,7 +6,7 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from movie_rating.secrets import MOVIE_DB_API_KEY
-from ratings.models import Movie, Provider
+from ratings.models import Movie, Provider, Rating
 from ratings.variables import IMAGE_SAVE_PATH, MOVIE_DB_IMAGE_URL, \
     MOVIE_DB_BASE_URL
 
@@ -65,6 +65,14 @@ def process_new_movies(movies_list, original_movie=None):
         except AttributeError:
             pass
         movie_object.save()
+        try:
+            tmdb_score = movie_object.ratings.get(service="Tmdb")
+        except ObjectDoesNotExist:
+            tmdb_score = Rating()
+            tmdb_score.score = movie["vote_average"]
+            tmdb_score.service = "Tmdb"
+            tmdb_score.save()
+            movie_object.ratings.add(tmdb_score)
         movie_object_list.append(movie_object)
 
         # similar movies
@@ -88,19 +96,24 @@ def process_new_movies(movies_list, original_movie=None):
                     provider_list = Provider.objects.all()
                     for provider in providers["US"][provider_type]:
                         try:
-                            provider_object = provider_list.get(name=provider["provider_name"])
+                            provider_object = \
+                                provider_list.get(
+                                    name=provider["provider_name"]
+                                )
                         except ObjectDoesNotExist:
                             provider_object = Provider()
 
                         provider_object.name = provider["provider_name"]
-                        provider_object.poster_id = provider["logo_path"].replace("/", "")
+                        provider_object.poster_id = \
+                            provider["logo_path"].replace("/", "")
 
                         provider_object.save()
 
                         movie_object.providers.add(provider_object)
 
                         if provider_object.poster_id \
-                                and provider_object.poster_id not in existing_images:
+                                and provider_object.poster_id \
+                                not in existing_images:
                             save_image(provider_object.poster_id)
             except KeyError:
                 pass
@@ -109,7 +122,5 @@ def process_new_movies(movies_list, original_movie=None):
             movie_object.similar_movies.add(original_movie)
 
         # providers
-
-
 
     return movie_object_list

@@ -87,9 +87,15 @@ class Person(models.Model):
 class Rating(models.Model):
     """Rating object."""
 
-    score = models.IntegerField(
+    score = models.FloatField(
         _("score"),
         help_text=_("The number score of the movie.")
+    )
+
+    service = models.CharField(
+        _("service"),
+        max_length=200,
+        help_text=_("The service the rating was sourced from")
     )
 
     def __str__(self):
@@ -180,7 +186,9 @@ class Movie(SlugFromNameModel, AbsoluteUrlFromClassNameMixin):
         """Display name as string."""
         return str(self.name)
 
+
 class Provider(SlugFromNameModel):
+    """Provider object."""
 
     name = models.CharField(
         _("name"),

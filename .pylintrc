@@ -8,4 +8,4 @@ load-plugins=pylint_django
 
 [MESSAGES CONTROL]
 
-disable=too-many-ancestors,import-error,no-name-in-module,too-few-public-methods
+disable=too-many-ancestors,import-error,no-name-in-module,too-few-public-methods,too-many-nested-blocks,too-many-statements,too-many-branches
