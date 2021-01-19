@@ -73,6 +73,12 @@ def process_new_movies(movies_list, original_movie=None):
             tmdb_score.service = "Tmdb"
             tmdb_score.save()
             movie_object.ratings.add(tmdb_score)
+
+        if movie_object.poster_id \
+                and movie_object.poster_id \
+                not in existing_images:
+            save_image(movie_object.poster_id)
+
         movie_object_list.append(movie_object)
 
         # similar movies
