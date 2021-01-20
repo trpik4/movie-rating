@@ -1,0 +1,26 @@
+.hover-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 99;
+  transition: all 0.4s;
+}
+
+.hover-description, .hover-title {
+  transform: translateY(0.5rem);
+  transition: all 0.4s;
+  opacity: 0;
+}
+
+.hover:hover .hover-content {
+  bottom: 2rem;
+}
+
+.hover:hover .hover-description, .hover:hover .hover-title {
+  opacity: 1;
+  transform: none;
+}
+
+.hover:hover img {
+  opacity: 0.1;
+}

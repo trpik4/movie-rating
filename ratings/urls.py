@@ -5,6 +5,11 @@ from ratings import views
 
 urlpatterns = [
     path(
+        '',
+        views.MovieListView.as_view(),
+        name="movie_list"
+    ),
+    path(
         'movies/',
         views.MovieListView.as_view(),
         name="movie_list"

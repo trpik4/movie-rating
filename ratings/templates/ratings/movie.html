@@ -1,16 +1,20 @@
 {% load static %}
-<div class="col-md-2 my-5">
-    <div class="card mb-2 w-76 h-100">
-        <a href="{{ movie.get_absolute_url }}">
-            <img class="card-img-top"
-                 src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
-                 alt="{{ movie.name }} poster">
-        </a>
-        <div class="card-body">
+<div class="col-md-2 p-4">
+    <div class="card w-100 h-100">
+        <div class="hover rounded">
             <a href="{{ movie.get_absolute_url }}">
-                <h5 class="card-title">{{ movie.name }}</h5>
+                <img class="card-img-top"
+                     src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
+                     alt="{{ movie.name }} poster">
             </a>
-            <p class="card-text">{{ movie.description|truncatechars:255 }}</p>
+            <div class="hover-overlay">
+                <h3 class="hover-title text-uppercase font-weight-bold text-dark">
+                    {{ movie.name }}
+                </h3>
+                <p class="hover-description text-dark">
+                    {{ movie.description|truncatechars:255 }}
+                </p>
+            </div>
         </div>
     </div>
 </div>

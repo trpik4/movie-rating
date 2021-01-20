@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block head %}
+ <link href="{% static 'ratings/movie.css' %}" rel="stylesheet">
+{% endblock %}
 {% block content %}
 <div class="row">
     <div class="d-flex flex-wrap">
