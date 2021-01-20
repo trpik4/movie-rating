@@ -27,19 +27,58 @@ def url_request(url, url_params="", page=1):
 
 def save_image(poster_id):
     """Save image."""
-    image_request = requests.get(MOVIE_DB_IMAGE_URL + poster_id, stream=True)
+    existing_images = os.listdir(IMAGE_SAVE_PATH)
 
-    if image_request.status_code == 200:
-        image_request.raw.decode_content = True
+    if poster_id and poster_id not in existing_images:
 
-        with open(IMAGE_SAVE_PATH + poster_id, 'wb') as file:
-            shutil.copyfileobj(image_request.raw, file)
+        image_request = requests.get(
+            MOVIE_DB_IMAGE_URL + poster_id,
+            stream=True
+        )
+
+        if image_request.status_code == 200:
+            image_request.raw.decode_content = True
+
+            with open(IMAGE_SAVE_PATH + poster_id, 'wb') as file:
+                shutil.copyfileobj(image_request.raw, file)
+
+
+def process_providers(movie_object):
+    """Process providers of movie."""
+    providers = url_request(
+        MOVIE_DB_BASE_URL,
+        "movie/{0}/watch/providers".format(movie_object.movie_id)
+    )["results"]
+    try:
+        for provider_type in providers["US"]:
+            if provider_type not in PROVIDER_TYPES:
+                continue
+            provider_list = Provider.objects.all()
+            for provider in providers["US"][provider_type]:
+                try:
+                    provider_object = \
+                        provider_list.get(
+                            name=provider["provider_name"]
+                        )
+                except ObjectDoesNotExist:
+                    provider_object = Provider()
+
+                provider_object.name = provider["provider_name"]
+                provider_object.poster_id = \
+                    provider["logo_path"].replace("/", "")
+
+                provider_object.save()
+
+                movie_object.providers.add(provider_object)
+
+                save_image(provider_object.poster_id)
+    except KeyError:
+        pass
 
 
 def process_new_movies(movies_list, original_movie=None):
     """Read list to save movies and get their posters."""
     movies = Movie.objects.all()
-    existing_images = os.listdir(IMAGE_SAVE_PATH)
     movie_object_list = []
 
     for movie in movies_list:
@@ -74,10 +113,7 @@ def process_new_movies(movies_list, original_movie=None):
             tmdb_score.save()
             movie_object.ratings.add(tmdb_score)
 
-        if movie_object.poster_id \
-                and movie_object.poster_id \
-                not in existing_images:
-            save_image(movie_object.poster_id)
+        save_image(movie_object.poster_id)
 
         movie_object_list.append(movie_object)
 
@@ -91,42 +127,9 @@ def process_new_movies(movies_list, original_movie=None):
                 original_movie=movie_object
             )
 
-            providers = url_request(
-                MOVIE_DB_BASE_URL,
-                "movie/{0}/watch/providers".format(movie_object.movie_id)
-            )["results"]
-            try:
-                for provider_type in providers["US"]:
-                    if provider_type not in PROVIDER_TYPES:
-                        continue
-                    provider_list = Provider.objects.all()
-                    for provider in providers["US"][provider_type]:
-                        try:
-                            provider_object = \
-                                provider_list.get(
-                                    name=provider["provider_name"]
-                                )
-                        except ObjectDoesNotExist:
-                            provider_object = Provider()
-
-                        provider_object.name = provider["provider_name"]
-                        provider_object.poster_id = \
-                            provider["logo_path"].replace("/", "")
-
-                        provider_object.save()
-
-                        movie_object.providers.add(provider_object)
-
-                        if provider_object.poster_id \
-                                and provider_object.poster_id \
-                                not in existing_images:
-                            save_image(provider_object.poster_id)
-            except KeyError:
-                pass
+            process_providers(movie_object)
 
         else:
             movie_object.similar_movies.add(original_movie)
-
-        # providers
 
     return movie_object_list
