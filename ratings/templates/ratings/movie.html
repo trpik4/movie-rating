@@ -1,20 +1,14 @@
 {% load static %}
-<div class="col-md-2 p-4">
+<div class="col-xs-6 col-sm-4 col-lg-2 p-4">
     <div class="card w-100 h-100">
-        <div class="hover rounded">
+        <div class="rounded">
             <a href="{{ movie.get_absolute_url }}">
                 <img class="card-img-top"
                      src="{% static 'ratings/images/'|add:movie.poster_id|safe %}"
-                     alt="{{ movie.name }} poster">
+                     alt="{{ movie.name }} poster" data-toggle="tooltip"
+                     data-html="true"
+                     title="{% include 'ratings/tooltip.html' with movie=movie %}">
             </a>
-            <div class="hover-overlay">
-                <h3 class="hover-title text-uppercase font-weight-bold text-dark">
-                    {{ movie.name }}
-                </h3>
-                <p class="hover-description text-dark">
-                    {{ movie.description|truncatechars:255 }}
-                </p>
-            </div>
         </div>
     </div>
 </div>
